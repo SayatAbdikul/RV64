@@ -59,7 +59,7 @@ module i_decoder (
                 rs2 = instruction[24:20];
                 funct3 = instruction[14:12];
                 // Immediate: [31] + [7] + [30:25] + [11:8] + 1b0
-                imm = {{52{instruction[31]}}, instruction[31], instruction[7], 
+                imm = {{51{instruction[31]}}, instruction[31], instruction[7], 
                       instruction[30:25], instruction[11:8], 1'b0};
             end
             
@@ -76,7 +76,7 @@ module i_decoder (
                 format = 3'b101;  // J-type
                 rd = instruction[11:7];
                 // Immediate: [31] + [19:12] + [20] + [30:21] + 1b0
-                imm = {{44{instruction[31]}}, instruction[31], instruction[19:12], 
+                imm = {{43{instruction[31]}}, instruction[31], instruction[19:12], 
                       instruction[20], instruction[30:21], 1'b0};
             end
             
@@ -97,6 +97,9 @@ module i_decoder (
                 rs2 = instruction[24:20];
                 funct3 = instruction[14:12];
                 funct7 = instruction[31:25];
+            end
+            default: begin
+                format = 3'b111;  // Invalid format
             end
         endcase
     end
