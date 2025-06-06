@@ -1,4 +1,4 @@
-module core_decoder (
+module core_execute_unit (
     input  logic        clk,
     input  logic        rst,
     input  logic [31:0] instruction,
