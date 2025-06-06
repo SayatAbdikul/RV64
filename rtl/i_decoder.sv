@@ -6,12 +6,13 @@ module i_decoder (
     output logic [63:0] imm,          // Immediate value (sign-extended)
     output logic [2:0] funct3,        // Function code
     output logic [6:0] funct7,        // Function code extension
+    output logic [6:0] opcode,        // Opcode
     output logic [2:0] format         // Format type (R=0, I=1, S=2, B=3, U=4, J=5)
 );
 
     // Instruction fields
-    logic [6:0] opcode;
-    assign opcode = instruction[6:0];
+    logic [6:0] opcode_val;
+    assign opcode_val = instruction[6:0];
 
     always_comb begin
         // Default values
@@ -22,8 +23,8 @@ module i_decoder (
         funct7 = 7'b0;
         imm = 64'b0;
         format = 3'b111;  // Invalid format
-        
-        case (opcode)
+        opcode = opcode_val;
+        case (opcode_val)
             // R-type (ADD, SUB, etc.)
             7'b0110011: begin
                 format = 3'b000;  // R-type
