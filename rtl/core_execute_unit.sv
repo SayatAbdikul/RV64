@@ -2,21 +2,27 @@ module core_execute_unit (
     input  logic        clk,
     input  logic        rst,
     input  logic [31:0] instruction,
-    output logic [63:0] result  // Changed to 64-bit for RV64
+    output logic [63:0] result
 );
     // Signal declarations
     logic [4:0]  rd, rs1, rs2;
     logic [63:0] imm;
     logic [2:0]  funct3;
     logic [6:0]  funct7, opcode;
-    logic [2:0]  format;  // Fixed to 3-bit width
+    logic [2:0]  format;
     
-    logic [63:0] a, b;          // ALU inputs
-    logic [63:0] reg_read_data1; // From register file
-    logic [63:0] reg_read_data2; // From register file
-    logic [4:0]  alu_sel;       // ALU operation selector
+    logic [63:0] a, b;
+    logic [63:0] reg_read_data1;
+    logic [63:0] reg_read_data2;
+    logic [4:0]  alu_sel;
+    logic [63:0] result_comb;
     
-    // Instantiate instruction decoder
+    // Pipelined write signals
+    logic [4:0]  wr_rd;         // Pipelined destination
+    logic [63:0] wr_data;       // Pipelined write data
+    //logic        wr_en;         // Pipelined write enable
+    
+    // Instruction decoder
     i_decoder decoder (
         .instruction(instruction),
         .rd(rd),
@@ -25,39 +31,34 @@ module core_execute_unit (
         .imm(imm),
         .funct3(funct3),
         .funct7(funct7),
-        .opcode(opcode),  // Not used in this module
+        .opcode(opcode),
         .format(format)
     );
     
-    // Instantiate register file (64-bit registers)
+    // Register file with pipelined write control
     register_file reg_file (
         .clk(clk),
         .rst(rst),
         .rs1(rs1),
         .rs2(rs2),
-        .rd(rd),
-        .write_data(result),     // 64-bit result
-        .write_enable(1'b1),     // Always write back for now
+        .rd(wr_rd),
+        .write_data(wr_data),
+        .write_enable(1'b1), // Always write enabled for this example
         .read_data1(reg_read_data1),
         .read_data2(reg_read_data2)
     );
     
-    // Operand selection mux
+    // Operand selection
     always_comb begin
-        a = reg_read_data1;  // Always use rs1 value
-        
-        // Select between register rs2 or immediate
-        if (format == 3'b001) begin  // I-type
-            b = imm;
-        end else begin                // R-type/others
-            b = reg_read_data2;
-        end
+        a = reg_read_data1;
+        b = (format == 3'b001) ? imm : reg_read_data2;  // I-type uses immediate
     end
+
 
     // ALU control logic
     always_comb begin
         alu_sel = 5'b11111;  // Default invalid operation
-        
+        //$display("the instruction is %h the opcode is %b, funct3 is %b, funct7 is %b, format is %b", instruction, opcode, funct3, funct7, format);
         case(format) 
             3'b000: begin // R-type
                 case(funct3)
@@ -77,7 +78,10 @@ module core_execute_unit (
                     end
                     3'b010: alu_sel = 5'b00101; // SLT
                     3'b011: alu_sel = 5'b00110; // SLTU
-                    3'b100: alu_sel = 5'b00100; // XOR
+                    3'b100: begin
+                        alu_sel = 5'b00100; // XOR
+                        //$display("XOR: rs1 = %h, rs2 = %h, rd = %h", rs1, rs2, rd);
+                    end
                     3'b101: begin
                         if(opcode == 7'b0110011) begin
                             alu_sel = (funct7 == 7'b0000000) ? 5'b01000 : 5'b01001; // SRL or SRA
@@ -85,7 +89,7 @@ module core_execute_unit (
                             alu_sel = (funct7 == 7'b0000000) ? 5'b01101 : 5'b01110; // SRLW or SRAW
                         end
                     end
-                    3'b110: alu_sel = 5'b00101; // OR
+                    3'b110: alu_sel = 5'b00011; // OR
                     3'b111: alu_sel = 5'b00010; // AND
                 endcase
             end
@@ -114,13 +118,17 @@ module core_execute_unit (
             end
         endcase
     end
-
-    // Instantiate ALU (64-bit)
+// ALU instance
     alu alu_instance (
         .a(a),
         .b(b),
         .sel(alu_sel),
-        .result(result)
+        .result(result_comb)   // Combinational result
     );
+    
+    assign wr_rd   = rd;
+    assign wr_data = result_comb;
+    //assign wr_en   = (format inside {3'b000, 3'b001}) && (rd != 0);
+    assign result  = result_comb;
 
 endmodule
