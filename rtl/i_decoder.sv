@@ -29,6 +29,7 @@ module i_decoder (
             7'b0110011: begin
                 format = 3'b000;  // R-type
                 rd = instruction[11:7];
+                //$display("the R-type instruction is %h, the rd is %d", instruction, rd);
                 rs1 = instruction[19:15];
                 rs2 = instruction[24:20];
                 funct3 = instruction[14:12];
@@ -40,6 +41,7 @@ module i_decoder (
                 rd = instruction[11:7];
                 rs1 = instruction[19:15];
                 funct3 = instruction[14:12];
+                funct7 = instruction[31:25];  // For shift operations
                 imm = {{52{instruction[31]}}, instruction[31:20]};  // Sign-extend 12-bit
             end
             
