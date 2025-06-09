@@ -35,22 +35,53 @@ assign add_res = a + b; // Add operation
 assign sub_res = $unsigned( $signed(a) - $signed(b) ); // Subtract operation
 assign sll_res = a << b[5:0]; // Logical left shift
 assign srl_res = a >> b[5:0]; // Logical left shift
-assign sra_res = $signed(a) >>> b[5:0]; // Arithmetic right shift
+assign sra_res = $signed(a) >>> b[4:0]; // Arithmetic right shift
 assign sllw_res = a[31:0] << b[4:0]; // Logical word left shift
 assign srlw_res = a[31:0] >> b[4:0]; // Logical left shift
 assign sraw_res = $signed(a[31:0]) >>> b[4:0]; // Arithmetic right shift
 always_comb begin
+    // $display("ALU operation selected: %0b", sel);
     case (sel)
-        ADD: result = add_res; // Add operation
-        SUB: result = sub_res;
-        AND: result = a & b;
-        OR:  result = a | b;
-        XOR: result = a ^ b;
-        SLT: result = ($signed(a) < $signed(b)) ? 1 : 0; // Set less than
-        SLTU: result = ($unsigned(a) < $unsigned(b)) ? 1 : 0; // Set less than unsigned
-        SLL: result = sll_res; // Logical left shift
-        SRL: result = srl_res; // Logical right shift
-        SRA: result = sra_res; // Arithmetic right shift
+        ADD: begin
+            result = add_res;
+            //$display("ALU ADD operation: %0d + %0d = %0d", a, b, result);
+        end // Add operation
+        SUB: begin
+            result = sub_res;
+            //$display("ALU SUB operation: %0d - %0d = %0d", a, b, result);
+        end
+        AND: begin
+            result = a & b;
+            $display("ALU AND operation: %0d & %0d = %0d", a, b, result);
+        end
+        OR:  begin
+            result = a | b;
+            //$display("ALU OR operation: %0d | %0d = %0d", a, b, result);
+        end
+        XOR: begin
+            result = a ^ b;
+            //$display("ALU XOR operation: %0d ^ %0d = %0d", a, b, result);
+        end
+        SLT: begin
+            result = ($signed(a) < $signed(b)) ? 1 : 0; // Set less than
+            //$display("ALU SLT operation: %0d < %0d = %0d", a, b, result);
+        end
+        SLTU: begin
+            result = (a < $unsigned($signed(b))) ? 1 : 0; // Set less than unsigned
+            $display("ALU SLTU operation: %0d < %0d = %0d", a, $unsigned($signed(b)), result);
+        end
+        SLL: begin
+            result = sll_res; // Logical left shift
+            //$display("ALU SLL operation: %0d << %0d = %0d", a, b[5:0], result);
+        end
+        SRL: begin
+            result = srl_res; // Logical right shift
+            //$display("ALU SRL operation: %0d >> %0d = %0d", a, b[5:0], result);
+        end
+        SRA: begin
+            result = sra_res; // Arithmetic right shift
+            //$display("ALU SRA operation: %0d >>> %0d = %0d", a, b[5:0], result);
+        end
         ADDW: result = { {32{add_res[31]}}, add_res[31:0]}; // Add word
         SUBW: result = { {32{sub_res[31]}}, sub_res[31:0]}; // Subtract word
         SLLW: result = { {32{sllw_res[31]}}, sllw_res}; // Shift left logical word
