@@ -27,18 +27,16 @@ int main(int argc, char** argv) {
     top->rst = 0;
     top->eval();
 
-    // Instruction set: {binary, name}
+    // Instruction set: {hex, name}
     std::vector<std::pair<uint32_t, std::string>> instructions = {
         {0x00A00093, "ADDI x1, x0, 10"},
         {0x00500113, "ADDI x2, x0, 5"},
         {0xFFD00193, "ADDI x3, x0, -3"},
         {0x01408213, "ADDI x4, x1, 20"},
-        //{0x00F10293, "ADDI x5, x2, 15"},
         {0x00208333, "ADD x6, x1, x2"}, //...
         {0x40208233, "SUB x7, x1, x2"},
         {0x0020F433, "AND x8, x1, x2"},
         {0x0020E4B3, "OR x9, x1, x2"},
-        //{0x00A18193, "ADDI x3, x3, 10"},
         {0x0030C533, "XOR x10, x1, x3"},
         {0x001125B3, "SLT x11, x2, x1"},
         {0x00313633, "SLTU x12, x2, x3"},
