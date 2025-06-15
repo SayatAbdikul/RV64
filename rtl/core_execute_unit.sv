@@ -1,15 +1,17 @@
 module core_execute_unit (
     input  logic        clk,
     input  logic        rst,
-    input  logic [31:0] instruction,
+    input logic [4:0]  rd,
+    input logic [4:0]  rs1,
+    input logic [4:0]  rs2,
+    input logic [63:0] imm,
+    input logic [2:0]  funct3,
+    input logic [6:0]  funct7,
+    input logic [6:0]  opcode,
+    input logic [2:0]  format, // Format type (R=0, I=1, S=2, B=3, U=4, J=5)
     output logic [63:0] result
 );
-    // Signal declarations
-    logic [4:0]  rd, rs1, rs2;
-    logic [63:0] imm;
-    logic [2:0]  funct3;
-    logic [6:0]  funct7, opcode;
-    logic [2:0]  format;
+
     
     logic [63:0] a, b;
     logic [63:0] reg_read_data1;
@@ -22,18 +24,7 @@ module core_execute_unit (
     logic [63:0] wr_data;       // Pipelined write data
     //logic        wr_en;         // Pipelined write enable
     
-    // Instruction decoder
-    i_decoder decoder (
-        .instruction(instruction),
-        .rd(rd),
-        .rs1(rs1),
-        .rs2(rs2),
-        .imm(imm),
-        .funct3(funct3),
-        .funct7(funct7),
-        .opcode(opcode),
-        .format(format)
-    );
+    
     
     // Register file with pipelined write control
     register_file reg_file (

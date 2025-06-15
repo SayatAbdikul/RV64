@@ -25,7 +25,24 @@ module core (
     
     // PC control logic
     assign pc_next = execute_en ? (pc_out + 4) : 64'h0;
-    
+    logic [4:0] rd, rs1, rs2;
+    logic [63:0] imm;
+    logic [2:0] funct3;
+    logic [6:0] funct7, opcode;
+    logic [2:0] format;
+    // Instruction decoder
+    i_decoder decoder (
+        .instruction(instruction),
+        .rd(rd),
+        .rs1(rs1),
+        .rs2(rs2),
+        .imm(imm),
+        .funct3(funct3),
+        .funct7(funct7),
+        .opcode(opcode),
+        .format(format)
+    );
+
     // PC module instance
     pc pc_inst (
         .clk(clk),
@@ -44,7 +61,14 @@ module core (
     core_execute_unit exec_unit (
         .clk(clk),
         .rst(rst_sync),
-        .instruction(instruction),
+        .rd(rd),
+        .rs1(rs1),
+        .rs2(rs2),
+        .imm(imm),
+        .funct3(funct3),
+        .funct7(funct7),
+        .opcode(opcode),
+        .format(format),
         .result(alu_result)
     );
     
