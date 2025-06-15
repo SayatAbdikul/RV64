@@ -5,7 +5,7 @@
 #include <cassert>
 #include <random>
 
-const int num_tests = 10;
+const int num_tests = 1000;
 
 // Define opcodes (match with your Verilog ALU)
 const int ADD  = 0b00000;
@@ -44,10 +44,10 @@ int main(int argc, char** argv) {
             alu->b = b;
             alu->eval();
             uint64_t expected = expected_fn(a, b);
-            std::cout << "Testing " << name << ": a = " << a << ", b = " << b << std::endl;
-            std::cout << "Result: " << alu->result << std::endl;
-            std::cout << "Expected: " << expected << std::endl;
-            std::cout << "------------------------" << std::endl;
+            // std::cout << "Testing " << name << ": a = " << a << ", b = " << b << std::endl;
+            // std::cout << "Result: " << alu->result << std::endl;
+            // std::cout << "Expected: " << expected << std::endl;
+            // std::cout << "------------------------" << std::endl;
             assert(alu->result == expected && name);
         }
     };
