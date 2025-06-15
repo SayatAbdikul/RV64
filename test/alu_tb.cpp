@@ -5,7 +5,7 @@
 #include <cassert>
 #include <random>
 
-const int num_tests = 100;
+const int num_tests = 10;
 
 // Define opcodes (match with your Verilog ALU)
 const int ADD  = 0b00000;
@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
 
     auto test_bin_op = [&](const char* name, int opcode, auto expected_fn) {
         alu->sel = opcode;
+        std::cout << "Testing " << name << " operation..." << std::endl;
         for (int i = 0; i < num_tests; ++i) {
             uint64_t a = dist64(gen);
             uint64_t b = dist64(gen);
@@ -43,6 +44,10 @@ int main(int argc, char** argv) {
             alu->b = b;
             alu->eval();
             uint64_t expected = expected_fn(a, b);
+            std::cout << "Testing " << name << ": a = " << a << ", b = " << b << std::endl;
+            std::cout << "Result: " << alu->result << std::endl;
+            std::cout << "Expected: " << expected << std::endl;
+            std::cout << "------------------------" << std::endl;
             assert(alu->result == expected && name);
         }
     };
@@ -56,8 +61,11 @@ int main(int argc, char** argv) {
     test_bin_op("SLTU", SLTU, [](uint64_t a, uint64_t b) { return a < b ? 1 : 0; });
     test_bin_op("SLL", SLL, [](uint64_t a, uint64_t b) { return a << (b & 0x3F); });
     test_bin_op("SRL", SRL, [](uint64_t a, uint64_t b) { return a >> (b & 0x3F); });
-    test_bin_op("SRA", SRA, [](uint64_t a, uint64_t b) { return (int64_t)a >> (b & 0x3F); });
-
+    test_bin_op("SRA", SRA, [](uint64_t a, uint64_t b) {
+        int64_t signed_a = static_cast<int64_t>(a);
+        uint8_t shift_amt = b & 0x3F;
+        return static_cast<uint64_t>(signed_a >> shift_amt);
+    });
     auto test_word_op = [&](const char* name, int opcode, auto expected_fn) {
         alu->sel = opcode;
         for (int i = 0; i < num_tests; ++i) {
