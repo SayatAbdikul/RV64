@@ -52,7 +52,7 @@ always_comb begin
         end
         AND: begin
             result = a & b;
-            $display("ALU AND operation: %0d & %0d = %0d", a, b, result);
+            //$display("ALU AND operation: %0d & %0d = %0d", a, b, result);
         end
         OR:  begin
             result = a | b;
@@ -68,7 +68,7 @@ always_comb begin
         end
         SLTU: begin
             result = (a < $unsigned($signed(b))) ? 1 : 0; // Set less than unsigned
-            $display("ALU SLTU operation: %0d < %0d = %0d", a, $unsigned($signed(b)), result);
+            //$display("ALU SLTU operation: %0d < %0d = %0d", a, $unsigned($signed(b)), result);
         end
         SLL: begin
             result = sll_res; // Logical left shift

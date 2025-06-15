@@ -6,7 +6,7 @@ module pc (
 );
     always_ff @(posedge clk or posedge reset) begin
         if (reset)
-            pc_out <= 64'h0000_0000_0000_0000;  // Reset vector
+            pc_out <= 64'b0;  // Reset vector
         else
             pc_out <= pc_next;
     end
