@@ -35,8 +35,8 @@ module i_decoder (
                 funct3 = instruction[14:12];
                 funct7 = instruction[31:25];
             end
-            // I-type (ADDI, LW, JALR)
-            7'b0010011, 7'b0000011, 7'b1100111: begin
+            // I-type (ADDI, LW)
+            7'b0010011, 7'b0000011: begin
                 format = 3'b001;  // I-type
                 rd = instruction[11:7];
                 rs1 = instruction[19:15];
@@ -74,8 +74,8 @@ module i_decoder (
                 imm = {{32{instruction[31]}}, instruction[31:12], 12'b0};
             end
             
-            // J-type (JAL)
-            7'b1101111: begin
+            // J-type (JAL, JALR)
+            7'b1101111, 7'b1100111: begin
                 format = 3'b101;  // J-type
                 rd = instruction[11:7];
                 // Immediate: [31] + [19:12] + [20] + [30:21] + 1b0

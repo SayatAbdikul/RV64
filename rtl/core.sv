@@ -56,14 +56,26 @@ module core (
         .pc(pc_out),
         .instruction(instruction)
     );
-    
-    // Core execute unit instance
-    core_execute_unit exec_unit (
+    logic [63:0] reg_read_data1, reg_read_data2;
+    logic [63:0] wr_data; // Write data to register file
+    // ALU result assignment
+    assign wr_data = alu_result; // For this example, we write ALU result back to register file
+    // Register file instance
+    register_file reg_file (
         .clk(clk),
         .rst(rst_sync),
-        .rd(rd),
         .rs1(rs1),
         .rs2(rs2),
+        .rd(rd),
+        .write_data(wr_data),
+        .write_enable(1'b1), // Always write enabled for this example
+        .read_data1(reg_read_data1),
+        .read_data2(reg_read_data2)
+    );
+    // Core execute unit instance
+    core_execute_unit exec_unit (
+        .reg_read_data1(reg_read_data1),
+        .reg_read_data2(reg_read_data2),
         .imm(imm),
         .funct3(funct3),
         .funct7(funct7),

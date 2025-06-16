@@ -1,9 +1,6 @@
 module core_execute_unit (
-    input  logic        clk,
-    input  logic        rst,
-    input logic [4:0]  rd,
-    input logic [4:0]  rs1,
-    input logic [4:0]  rs2,
+    input logic [63:0]  reg_read_data1,
+    input logic [63:0]  reg_read_data2,
     input logic [63:0] imm,
     input logic [2:0]  funct3,
     input logic [6:0]  funct7,
@@ -14,30 +11,15 @@ module core_execute_unit (
 
     
     logic [63:0] a, b;
-    logic [63:0] reg_read_data1;
-    logic [63:0] reg_read_data2;
     logic [4:0]  alu_sel;
     logic [63:0] result_comb;
     
     // Pipelined write signals
-    logic [4:0]  wr_rd;         // Pipelined destination
-    logic [63:0] wr_data;       // Pipelined write data
     //logic        wr_en;         // Pipelined write enable
     
     
     
-    // Register file with pipelined write control
-    register_file reg_file (
-        .clk(clk),
-        .rst(rst),
-        .rs1(rs1),
-        .rs2(rs2),
-        .rd(wr_rd),
-        .write_data(wr_data),
-        .write_enable(1'b1), // Always write enabled for this example
-        .read_data1(reg_read_data1),
-        .read_data2(reg_read_data2)
-    );
+    
     
     // Operand selection
     always_comb begin
@@ -117,8 +99,6 @@ module core_execute_unit (
         .result(result_comb)   // Combinational result
     );
     
-    assign wr_rd   = rd;
-    assign wr_data = result_comb;
     //assign wr_en   = (format inside {3'b000, 3'b001}) && (rd != 0);
     assign result  = result_comb;
 
