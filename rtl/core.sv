@@ -24,13 +24,23 @@ module core (
     assign execute_en = ~rst_sync;
     
     // PC control logic
-    assign pc_next = execute_en ? (pc_out + 4) : 64'h0;
     logic [4:0] rd, rs1, rs2;
     logic [63:0] imm;
     logic [2:0] funct3;
     logic [6:0] funct7, opcode;
     logic [2:0] format;
+    logic branch_taken; // Branch taken signal
     // Instruction decoder
+    branch branch_inst (
+        .format(format),
+        .imm(imm),
+        .funct3(funct3),
+        .a(reg_read_data1),
+        .b(reg_read_data2),
+        .pc(pc_out),
+        .branch_taken(branch_taken),
+        .branch_target(pc_next)
+    );
     i_decoder decoder (
         .instruction(instruction),
         .rd(rd),
@@ -68,7 +78,7 @@ module core (
         .rs2(rs2),
         .rd(rd),
         .write_data(wr_data),
-        .write_enable(1'b1), // Always write enabled for this example
+        .write_enable(~branch_taken),
         .read_data1(reg_read_data1),
         .read_data2(reg_read_data2)
     );

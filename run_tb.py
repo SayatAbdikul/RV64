@@ -13,7 +13,7 @@ if choice not in {'1', '2', '3', '4', '5', '6'}:
     exit(1)
 # Run the selected test based on user input
 commands = {
-    '1': ["verilator -Wall --trace -cc rtl/core.sv rtl/pc.sv rtl/inst_memory.sv rtl/core_execute_unit.sv rtl/alu.sv rtl/i_decoder.sv rtl/register_file.sv --top core --exe test/core_tb.cpp", 
+    '1': ["verilator -Wall --trace -cc rtl/branch.sv rtl/core.sv rtl/pc.sv rtl/inst_memory.sv rtl/core_execute_unit.sv rtl/alu.sv rtl/i_decoder.sv rtl/register_file.sv --top core --exe test/core_tb.cpp", 
           "make -C obj_dir -f Vcore.mk Vcore",
           "./obj_dir/Vcore"],
     '2': ["verilator -Wall --trace -cc rtl/alu.sv --top alu --exe test/alu_tb.cpp",
