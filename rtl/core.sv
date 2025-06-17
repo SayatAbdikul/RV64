@@ -29,17 +29,18 @@ module core (
     logic [2:0] funct3;
     logic [6:0] funct7, opcode;
     logic [2:0] format;
-    logic branch_taken; // Branch taken signal
-    // Instruction decoder
-    branch branch_inst (
+    logic flow_change; // Branch taken signal
+    
+    control_flow control_flow (
+        .opcode(opcode),
         .format(format),
         .imm(imm),
         .funct3(funct3),
         .a(reg_read_data1),
         .b(reg_read_data2),
         .pc(pc_out),
-        .branch_taken(branch_taken),
-        .branch_target(pc_next)
+        .flow_change(flow_change),
+        .next_pc(pc_next)
     );
     i_decoder decoder (
         .instruction(instruction),
@@ -78,7 +79,7 @@ module core (
         .rs2(rs2),
         .rd(rd),
         .write_data(wr_data),
-        .write_enable(~branch_taken),
+        .write_enable(~flow_change),
         .read_data1(reg_read_data1),
         .read_data2(reg_read_data2)
     );

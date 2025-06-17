@@ -78,9 +78,14 @@ module i_decoder (
             7'b1101111, 7'b1100111: begin
                 format = 3'b101;  // J-type
                 rd = instruction[11:7];
-                // Immediate: [31] + [19:12] + [20] + [30:21] + 1b0
-                imm = {{43{instruction[31]}}, instruction[31], instruction[19:12], 
+                if (opcode_val == 7'b1100111) begin
+                    rs1 = instruction[19:15]; // JALR uses rs1
+                    imm = {{52{instruction[31]}}, instruction[31:20]}; // JALR immediate
+                end else begin
+                    rs1 = 5'b0; // JAL does not use rs1
+                    imm = {{43{instruction[31]}}, instruction[31], instruction[19:12], 
                       instruction[20], instruction[30:21], 1'b0};
+                end
             end
             
             // RV64I specific
