@@ -8,13 +8,14 @@ module ram #(parameter N = 20, M = 32)(
 
     logic [M-1:0] mem [0:(2**N)-1];  // Memory array: 2^N locations, M-bit each
     initial begin
-        $readmemh("instructions.txt", mem);  // for instruction preload
-        $readmemh("data_memory.mem", mem, 4096);  // for instruction preload
+        $readmemh("/Users/sayat/Documents/GitHub/RV64/memory/instructions.txt", mem);  // for instruction preload
     end
+    
     always_ff @(posedge clk) begin
         if (we)
             mem[adr] <= din;  // Write on rising edge if write-enable is high
     end
+
     final begin
         integer i;
         integer f;
