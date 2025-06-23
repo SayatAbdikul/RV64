@@ -63,9 +63,12 @@ module core (
     );
     
     // Instruction memory instance
-    inst_memory inst_mem (
-        .pc(pc_out),
-        .instruction(instruction)
+    ram ram (
+        .clk(clk),
+        .addr(pc_out[21:2]), // Assuming 4-byte aligned addresses
+        .we(1'b0), // Read operation
+        .din(32'b0), // No data to write
+        .dout(instruction)
     );
     logic [63:0] reg_read_data1, reg_read_data2;
     logic [63:0] wr_data; // Write data to register file
