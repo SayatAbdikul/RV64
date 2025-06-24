@@ -37,7 +37,6 @@ module control_flow (
             3'b101: begin
                 flow_change = 1'b1;
                 if (opcode == 7'b1100111) begin  // JALR
-                    flow_change = 1'b1;
                     next_pc = (a + imm) & ~64'd1;
                 end else begin  // JAL
                     next_pc = pc + imm;  // PC-relative jump

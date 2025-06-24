@@ -24,7 +24,7 @@ module core_execute_unit (
     // Operand selection
     always_comb begin
         a = reg_read_data1;
-        b = (format == 3'b001) ? imm : reg_read_data2;  // I-type uses immediate
+        b = (format == 3'b001 || format == 3'b101 && opcode == 7'b1100111) ? imm : reg_read_data2;  // I-type uses immediate
     end
 
 
@@ -84,6 +84,13 @@ module core_execute_unit (
                     3'b110: alu_sel = 5'b00011; // ORI
                     3'b111: alu_sel = 5'b00010; // ANDI
                 endcase
+            end
+            3'b101: begin // J-type (JALR only)
+                if (opcode == 7'b1100111) begin // JALR
+                    alu_sel = 5'b00000; // ADD for JALR
+                end else begin // JAL
+                    alu_sel = 5'b11111; // No operation for JAL, handled in control flow
+                end
             end
             
             default: begin // Other formats (S, B, U, J)
