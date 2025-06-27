@@ -87,7 +87,9 @@ always_comb begin
         SLLW: result = { {32{sllw_res[31]}}, sllw_res}; // Shift left logical word
         SRLW: result = { {32{srlw_res[31]}}, srlw_res}; // Shift right logical word
         SRAW: result = { {32{sraw_res[31]}}, sraw_res}; // Shift right arithmetic word
-        default: result = 0; // Default case to avoid latches
+        default: begin
+            result = 0; // Default case to avoid latches
+        end
     endcase
 end
     

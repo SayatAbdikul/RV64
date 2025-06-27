@@ -35,7 +35,7 @@ module i_decoder (
                 funct3 = instruction[14:12];
                 funct7 = instruction[31:25];
             end
-            // I-type (ADDI, LW)
+            // I-type (ADDI, load instructions)
             7'b0010011, 7'b0000011: begin
                 format = 3'b001;  // I-type
                 rd = instruction[11:7];

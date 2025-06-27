@@ -50,12 +50,13 @@ module ram #(parameter N = 13, M = 64)(
         mem[data_addr]
     };
     // Force 4-byte aligned access for instructions
-
+    logic [N-1:0] inst_addr_aligned;
+    assign inst_addr_aligned = inst_addr & ~3;  // Align to 4-byte boundary
     assign inst_out = {
-        mem[inst_addr],
-        mem[inst_addr+1],
-        mem[inst_addr+2],
-        mem[inst_addr+3]
+        mem[inst_addr_aligned],
+        mem[inst_addr_aligned+1],
+        mem[inst_addr_aligned+2],
+        mem[inst_addr_aligned+3]
     };
 endmodule
 

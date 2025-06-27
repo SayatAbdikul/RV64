@@ -25,7 +25,7 @@ module core (
     
     // PC control logic
     logic [4:0] rd, rs1, rs2;
-    logic [63:0] imm;
+    logic [63:0] imm, load_data;
     logic [2:0] funct3;
     logic [6:0] funct7, opcode;
     logic [2:0] format;
@@ -61,14 +61,29 @@ module core (
         .pc_next(pc_next),
         .pc_out(pc_out)
     );
-    
+    logic mem_write_enable = opcode == 7'b0100011 ? 1'b1 : 1'b0; // Enable memory write for S-type instructions
+    logic [63:0] mem_data; // Register read data
+    logic [12:0] mem_addr; // the value of N, may be changed based on memory size
+    store store_inst (
+        .format(format),
+        .imm(imm),
+        .reg1(reg_read_data1), // Base address from register 1
+        .reg2(reg_read_data2), // Data to store from register 2
+        .funct3(funct3), // Function code for the store operation
+        .mem_write_en(mem_write_enable), // Memory write enable signal
+        .mem_addr(mem_addr), // Memory address for the store operation
+        .mem_data(mem_data) // Data to be written to memory
+    );
+
     // Instruction memory instance
     ram ram (
         .clk(clk),
-        .addr(pc_out[21:2]), // Assuming 4-byte aligned addresses
-        .we(1'b0), // Read operation
-        .din(32'b0), // No data to write
-        .dout(instruction)
+        .inst_addr(pc_out[12:0]), // Assuming 4-byte aligned addresses
+        .data_addr(mem_addr), // Assuming 4-byte aligned addresses
+        .we(mem_write_enable), // Read operation
+        .data_in(mem_data), // No data to write
+        .inst_out(instruction),
+        .data_out(load_data)
     );
     logic [63:0] reg_read_data1, reg_read_data2;
     logic [63:0] wr_data; // Write data to register file
@@ -95,6 +110,7 @@ module core (
         .funct7(funct7),
         .opcode(opcode),
         .format(format),
+        .load_data(load_data),
         .result(alu_result)
     );
     
