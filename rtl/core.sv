@@ -88,7 +88,7 @@ module core (
     logic [63:0] reg_read_data1, reg_read_data2;
     logic [63:0] wr_data; // Write data to register file
     // ALU result assignment
-    assign wr_data = alu_result; // For this example, we write ALU result back to register file
+    assign wr_data = format == 3'b100 ? upper_out: alu_result; // Write upper immediate for U-type instructions
     // Register file instance
     register_file reg_file (
         .clk(clk),
@@ -101,6 +101,15 @@ module core (
         .read_data1(reg_read_data1),
         .read_data2(reg_read_data2)
     );
+    logic [63:0] upper_out; // Temporary PC next value for branching
+    // Upper module instance
+    upper upper (
+        .pc(pc_out),
+        .imm(imm[19:0]), // Use lower 20 bits of immediate
+        .opcode(opcode),
+        .upper_out(upper_out)
+    );
+
     // Core execute unit instance
     core_execute_unit exec_unit (
         .reg_read_data1(reg_read_data1),

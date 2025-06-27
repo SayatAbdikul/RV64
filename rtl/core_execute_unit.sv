@@ -25,8 +25,8 @@ module core_execute_unit (
         if(format == 3'b001 || format == 3'b101 && opcode == 7'b1100111) begin
             b = imm;
         end else if(opcode == 7'b0000011) begin
-            case (funct3)
-                3'b000: b = {{56{load_data[15]}}, load_data[7:0]}; // Load instructions use base address + immediate
+            case (funct3) // Load instructions use base address + immediate
+                3'b000: b = {{56{load_data[15]}}, load_data[7:0]}; // LB
                 3'b001: b = {{48{load_data[15]}}, load_data[15:0]}; // LH
                 3'b010: b = {{32{load_data[31]}}, load_data[31:0]}; // LW
                 3'b011: b = load_data; // LD
