@@ -1,4 +1,4 @@
-#include "Vinst_memory.h"
+#include "Vram.h"
 #include "verilated.h"
 #include <iostream>
 #include <cstdint>
@@ -6,22 +6,29 @@
 
 int main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
-    Vinst_memory* dut = new Vinst_memory;
+    Vram* dut = new Vram;
     
     // Initialize and reset
-    dut->pc = 0;
+    dut->inst_addr = 0;
+    dut->data_addr = 0;
+    dut->data_in = 0;
+    dut->we = 0;
+    dut->clk = 1;
     dut->eval();
-    
+    dut->clk = 0;  // Reset clock to 0
+    dut->eval();  // Evaluate the reset state
     for(int i = 0; i < 22; ++i) {
-        // Set PC FIRST
-        dut->pc = i * 4;  // Set new address BEFORE evaluation
+        dut->clk = 1;
+        dut->inst_addr = i * 4;  // 0, 4, 8, 12,...
         
-        // Evaluate to get instruction
         dut->eval();
         
-        std::cout << "PC: 0x" << std::hex << std::setw(8) << std::setfill('0') 
-                  << dut->pc << " -> Instruction: 0x" << std::setw(8) 
-                  << dut->instruction << std::dec << std::endl;
+        std::cout << "PC: 0x" << std::hex << std::setw(8) 
+                << dut->inst_addr << " -> Instruction: 0x" << std::setw(8) 
+                << dut->inst_out << std::endl;
+                
+        dut->clk = 0;
+        dut->eval();
     }
     
     delete dut;
